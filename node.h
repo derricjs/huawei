@@ -19,6 +19,4 @@ private:
 	int con_number;         //消费节点号，不连接消费节点则为-1；
 	int consumption;        //连接的消费节点所需带宽；
 	double level;           //节点优先级；
-
-
 };
