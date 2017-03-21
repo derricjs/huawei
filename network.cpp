@@ -2,7 +2,7 @@
 #include <sstream>
 #include <string>
 using namespace std;
-network netbrief (char * topo[MAX_EDGE_NUM], map<int, set<int>> & nettopology, map<pair<int, int>, pair<int, int>> & linkstatus)
+network netbrief(char * topo[MAX_EDGE_NUM], map<int, set<int>> & nettopology, map<pair<int, int>, pair<int, int>> & linkstatus, vector<node> & nodes)
 {
 	network net;
 	string num;
@@ -17,13 +17,20 @@ network netbrief (char * topo[MAX_EDGE_NUM], map<int, set<int>> & nettopology, m
 	record >> num;
 	net.cost_of_server = stoi(num);
 	int n = 4;
+	nodes.resize(net.netnodes);
 	string source, end, bandwidth, price;
 	for (int i = n; i != n + net.links; ++i)
 	{
 		record.str(topo[i]);
-		record >> source >> end >> bandwidth >> price ;
+		record >> source >> end >> bandwidth >> price;
 		linkstatus[make_pair(stoi(source), stoi(end))] = make_pair(stoi(bandwidth), stoi(price));
 		nettopology[stoi(source)].insert(stoi(end));
+	}
+	for (int j = n + 1 + net.links; j != n + 1 + net.links + net.comsumers; ++j)
+	{
+		record.str(topo[j]);
+		record >> source >> end >> bandwidth;
+		nodes[stoi(end)].set_consume_node(stoi(source), stoi(bandwidth));
 	}
 	return net;
 }
