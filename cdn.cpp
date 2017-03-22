@@ -18,7 +18,6 @@ int main(int argc, char *argv[])
     if (line_num == 0)
     {
         printf("Please input valid topo file.\n");
-        return -1;
     }
 
     char *result_file = argv[2];

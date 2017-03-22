@@ -125,14 +125,14 @@
     <ClInclude Include="deploy.h" />
     <ClInclude Include="lib_io.h" />
     <ClInclude Include="lib_time.h" />
-    <ClInclude Include="network.h" />
+    <ClInclude Include="solution.h" />
     <ClInclude Include="node.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cdn.cpp" />
     <ClCompile Include="deploy.cpp" />
     <ClCompile Include="io.cpp" />
-    <ClCompile Include="network.cpp" />
+    <ClCompile Include="solution.cpp" />
     <ClCompile Include="node.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

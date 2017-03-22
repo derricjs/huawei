@@ -27,7 +27,7 @@
     <ClInclude Include="node.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="network.h">
+    <ClInclude Include="solution.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -44,7 +44,7 @@
     <ClCompile Include="node.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="network.cpp">
+    <ClCompile Include="solution.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
