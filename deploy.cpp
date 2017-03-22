@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string>
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include "solution.h"
 #include "node.h"
@@ -13,10 +14,12 @@ void deploy_server(char * topo[MAX_EDGE_NUM], int line_num, char * filename)
 	solution first_edit(topo);//生成解决方案类，包括网络概况(包括网络节点、消费节点、链路条数、服务器成本),网络拓扑结构，链路情况。
 
 	/******************************************输出测试******************************************************/
-	first_edit.print();
+	ofstream os("network.txt");
+	first_edit.print(os);
 	/*********************************************************************************************************/
 
-	const int hops_to_consumer = 5;
+	const int hops_to_consumer = 2;
+	first_edit.search_dev_node(hops_to_consumer);
 
 
 	// 需要输出的内容

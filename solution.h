@@ -4,6 +4,7 @@
 #include <set>
 #include <vector>
 #include "node.h"
+#include <iostream>
 struct network
 {
 	int netnodes;       //网络节点数
@@ -12,11 +13,12 @@ struct network
 	int cost_of_server; //服务器费用
 };
 
-class solution 
-{public:
+class solution
+{
+public:
 	solution(char * topo[MAX_EDGE_NUM]); //将读入数据转换为相应数据结构
-	void print();
-	std::set<int> search_dev_node(const int max_hops);
+	void print(std::ostream & os);
+	std::set<int> search_dev_node(const int max_hops);    //返回所有节点在max_hops跳数内到达的消费节点
 private:
 	network net;                                                       //网络概况
 	std::map<int, std::set<int>> nettopo;                              //网络拓扑结构

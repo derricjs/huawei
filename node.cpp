@@ -48,8 +48,8 @@ int node::show_bandwidth(int seq_number) const
 ostream & operator << (std::ostream & os, const node &item)
 {
 	os << "节点序号：" << "\t" << item.sequence_number << endl << "服务节点:" << "\t" << (item.is_service_node ? "是" : "否") << endl;
-	cout << "消费节点：" << "\t";
-	item.consume_number() >= 0 ? (cout << "是 " << item.con_number << endl << "消费带宽为:" << "\t" << item.consumption << "Gbps") : cout << "否";
-	cout<<endl << "优先级：" << "\t" << item.level;
+	os << "消费节点：" << "\t";
+	item.consume_number() >= 0 ? (os << "是 " << item.con_number << endl << "消费带宽为:" << "\t" << item.consumption << "Gbps") : os << "否";
+	os<<endl << "优先级：" << "\t" << item.level;
 	return os;
 }
