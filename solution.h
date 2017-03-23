@@ -11,6 +11,8 @@ struct network
 	int links;          //网络链路数
 	int comsumers;      //消费节点数量 
 	int cost_of_server; //服务器费用
+	int total_consumption; //带宽总需求
+	double price_of_perGbit; //单位带宽价格
 };
 
 class solution
@@ -21,8 +23,7 @@ public:
 	std::set<int> search_dev_node(const int max_hops);    //返回所有节点在max_hops跳数内到达的消费节点
 private:
 	network net;                                                       //网络概况
-	std::map<int, std::set<int>> nettopo;                              //网络拓扑结构
-	std::map<std::pair<int, int>, std::pair<int, int>> link_status;    //链路状况
+	std::map<int, std::map<int, std::pair<int, int>>> nettopo;         //网络拓扑结构
 	std::vector<node> nodes;                                           //节点
 
 

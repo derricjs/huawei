@@ -14,11 +14,13 @@ void deploy_server(char * topo[MAX_EDGE_NUM], int line_num, char * filename)
 	solution first_edit(topo);//生成解决方案类，包括网络概况(包括网络节点、消费节点、链路条数、服务器成本),网络拓扑结构，链路情况。
 
 	/******************************************输出测试******************************************************/
+#ifdef _DEBUG 
 	ofstream os("network.txt");
 	first_edit.print(os);
+#endif
 	/*********************************************************************************************************/
 
-	const int hops_to_consumer = 2;
+	const int hops_to_consumer = 3;
 	first_edit.search_dev_node(hops_to_consumer);
 
 

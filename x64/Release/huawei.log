@@ -1,24 +1,24 @@
-﻿生成启动时间为 2017/3/22 19:12:12。
+﻿生成启动时间为 2017/3/23 19:41:48。
      1>项目“E:\杂物\huawei\huawei\huawei.vcxproj”在节点 2 上(Build 个目标)。
      1>ClCompile:
-         D:\program file\Visual Studio community 2015\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"x64\Release\\" /Fd"x64\Release\vc140.pdb" /Gd /TP /errorReport:prompt cdn.cpp deploy.cpp io.cpp network.cpp node.cpp
-         cdn.cpp
+         D:\program file\Visual Studio community 2015\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"x64\Release\\" /Fd"x64\Release\vc140.pdb" /Gd /TP /errorReport:prompt deploy.cpp solution.cpp node.cpp
          deploy.cpp
-         io.cpp
-         network.cpp
+         solution.cpp
          node.cpp
        Link:
          D:\program file\Visual Studio community 2015\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"E:\杂物\huawei\x64\Release\huawei.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"E:\杂物\huawei\x64\Release\huawei.pdb" /OPT:REF /OPT:ICF /LTCG:incremental /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\杂物\huawei\x64\Release\huawei.lib" /MACHINE:X64 x64\Release\cdn.obj
          x64\Release\deploy.obj
          x64\Release\io.obj
-         x64\Release\network.obj
+         x64\Release\solution.obj
          x64\Release\node.obj
          正在生成代码
-         All 624 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+         640 of 743 functions (86.1%) were compiled, the rest were copied from previous compilation.
+           403 functions were new in current compilation
+           21 functions had inline decision re-evaluated but remain unchanged
          已完成代码的生成
          huawei.vcxproj -> E:\杂物\huawei\x64\Release\huawei.exe
      1>已完成生成项目“E:\杂物\huawei\huawei\huawei.vcxproj”(Build 个目标)的操作。
 
 已成功生成。
 
-已用时间 00:00:02.85
+已用时间 00:00:02.29
