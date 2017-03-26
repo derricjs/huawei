@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <set>
 class node
 {
 public:
@@ -10,7 +11,7 @@ public:
 	bool service_node() const;                                                        //是否为服务节点
 	int consume_number() const;                                                       //显示所连接的消费节点序号
 	double show_level() const;                                                        //显示优先级
-	void set_service_node();                                                          //设置为服务节点
+	void set_service_node(bool is_server);                                                          //设置为服务节点
 	int set_consume_node(int consume_number, int band_consumption);                   //设置为与消费节点相邻，并设置消费带宽
 	double set_level();                                                               //设置节点优先级；
 	int show_bandwidth(int seq_number) const;                                         //显示除输入节点外其他相邻节点到该节点的带宽余量；
@@ -21,6 +22,7 @@ private:
 	bool is_service_node;   //是否为服务节点；
 	int con_number;         //消费节点号，不连接消费节点则为-1；
 	int consumption;        //连接的消费节点所需带宽；
+ 	//int bandwidth;          //连接的带宽
 	double level;           //节点优先级；
 };
 std::ostream & operator << (std::ostream & os, const node &item);

@@ -23,9 +23,9 @@ double node::show_level() const
 	return level;
 }
 
-void node::set_service_node()
+void node::set_service_node(bool is_server)
 {
-	is_service_node = true;
+	is_service_node = is_server;
 }
 
 int node::set_consume_node(int consume_number, int band_consumption)
