@@ -23,6 +23,8 @@ solution::solution(char * topo[MAX_EDGE_NUM])
 		record >> source >> end >> bandwidth >> price;
 		nettopo[stoi(source)][stoi(end)] = make_pair(stoi(bandwidth), stoi(price));
 		nettopo[stoi(end)][stoi(source)] = make_pair(stoi(bandwidth), stoi(price));
+		links[stoi(source)].insert(stoi(end));
+		links[stoi(end)].insert(stoi(source));
 		net.price_of_perGbit += stod(bandwidth)*stod(price);
 		total_bandwidth += stod(bandwidth);
 	}
@@ -122,13 +124,13 @@ set<int> solution::search_dev_node(const int current_hops)
 				if (throughtput > net.total_consumption)
 				{
 					auto q = [&](const int & j, const int & k) {return count_of_consumer.count(j) < count_of_consumer.count(k); };
-					stable_sort(order_of_consumer.begin(), order_of_consumer.end(), q);  //对消费节点寻路排序，以当前跳数下到达设施点数为依据
+					stable_sort(order_of_consumer.begin(), order_of_consumer.end(), q);               //对消费节点寻路排序，以当前跳数下到达设施点数为依据
 					for (auto & node : nodes)
 						node.set_service_node(false);
 					for (auto it = candidate_server.cbegin(); it != candidate_server.cbegin() + amount_of_server; ++it)
 						nodes[*it].set_service_node(true);
 
-#ifdef _DEBUG
+#ifdef _TEST
 					for (auto it = candidate_server.cbegin(); it != candidate_server.cbegin() + amount_of_server; ++it)
 						cout << *it << ends;
 					cout << endl;
@@ -175,7 +177,7 @@ set<int> solution::search_dev_node(const int current_hops)
 	return set<int>(candidate_server.cbegin(), candidate_server.cbegin() + amount_of_server);
 	}
 
-int solution::get_hops_tables()
+int solution::get_hops_tables(int mhops)
 {
 	hops_tables.resize(net.netnodes);                                                     //表示所有节点在一系列跳数下到达的消费节点
 	vector<set<int>>::size_type max_hops = 0;                                                                     //最大跳数
@@ -186,15 +188,21 @@ int solution::get_hops_tables()
 		vector<set<int>> node_of_path;                                                   //从某一节点出发所经节点
 		node_of_path.push_back(set<int>{i});
 
-		for (int j = 0; j != INT_MAX; ++j)
+		for (int j = 0; j != mhops+1; ++j)
 		{
 			node_of_path.push_back(set<int>());
 			for (auto it = node_of_path[j].cbegin(); it != node_of_path[j].cend(); ++it)
 			{
-				for (auto p = nettopo[*it].cbegin(); p != nettopo[*it].cend(); ++p)      //加入当前节点所有下一跳节点
-					node_of_path[j + 1].insert(p->first);
+
+				
 				if (-1 != nodes[*it].consume_number())                                   //判断当前节点是否为消费节点
+				{
 					(*hops_table)[j].insert(nodes[*it].consume_number());
+					continue;
+				}
+				//for (auto p = nettopo[*it].cbegin(); p != nettopo[*it].cend(); ++p)      //加入当前节点所有下一跳节点
+				//	node_of_path[j + 1].insert(p->first);
+				node_of_path[j + 1].insert(links[*it].cbegin(), links[*it].cend());
 			}
 			if (net.comsumers == (*hops_table)[j].size())
 				break;
@@ -205,7 +213,7 @@ int solution::get_hops_tables()
 		max_hops = (*hops_table).size() - 1 > max_hops ? (*hops_table).size() - 1 : max_hops;
 
 	}
-#ifdef _DEBUG
+#ifdef _TEST
 	int k = 0;
 	ofstream os("hops_of_tables.txt");
 	os << "所有节点跳数与所达的消费节点关系：" << endl << endl;
@@ -228,5 +236,10 @@ int solution::get_hops_tables()
 	}
 #endif
 	return MAX_HOPS = max_hops % 2 == 1 ? (max_hops + 1) / 2 : max_hops / 2;
+
+}
+
+void solution::routing()
+{
 
 }

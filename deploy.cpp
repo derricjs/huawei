@@ -7,6 +7,7 @@
 #include <set>
 #include "solution.h"
 #include "node.h"
+
 using namespace std;
 //你要完成的功能总入口
 void deploy_server(char * topo[MAX_EDGE_NUM], int line_num, char * filename)
@@ -15,12 +16,12 @@ void deploy_server(char * topo[MAX_EDGE_NUM], int line_num, char * filename)
 	solution first_edit(topo);//生成解决方案类，包括网络概况(包括网络节点、消费节点、链路条数、服务器成本),网络拓扑结构，链路情况。
 
 	/******************************************输出测试******************************************************/
-#ifdef _DEBUG 
+#ifdef _TEST 
 	ofstream os("network.txt");
 	first_edit.print(os);
 #endif
 	/*********************************************************************************************************/
-	int MAX_HOPS = first_edit.get_hops_tables();
+	int MAX_HOPS = first_edit.get_hops_tables(3);
 
 	for (int i = 0; i != MAX_HOPS +1; ++i)
 	{
