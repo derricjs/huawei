@@ -62,8 +62,10 @@ void solution::print(ostream & os)
 
 set<int> solution::search_dev_node(const int current_hops)
 {
-	int amount_of_server = ceil((1 - net.comsumers)*current_hops / static_cast<double>(MAX_HOPS)) + net.comsumers;  //服务器数量
+	//int amount_of_server = ceil((1 - net.comsumers)*current_hops / static_cast<double>(MAX_HOPS)) + net.comsumers;  //服务器数量
+	int amount_of_server = net.comsumers / 4;
 	vector<int> candidate_server(net.netnodes);        //候选服务节点
+	set<int> servers;
 	int i = 0;
 	for (auto & element : candidate_server)
 	{
@@ -86,96 +88,119 @@ set<int> solution::search_dev_node(const int current_hops)
 	sort(candidate_server.begin(), candidate_server.end(), g);           // 按节点吞吐量排序         
 	stable_sort(candidate_server.begin(), candidate_server.end(), f);   //在上次排序的基础上，按当前跳数到达消费节点数量排序
 
-
-
-
 	set<int> complementary;      //互补性检查
 	multiset<int> count_of_consumer; //重复关键字的complementary
+	int throughtput = 0;  //候选服务点输出总带宽；
+	set<int>::size_type size_of_complementary = 0;
 	vector<int> order_of_consumer(net.comsumers); //寻路时遍历消费节点的顺序；
 	int j = 0;
 	for (auto & ele : order_of_consumer)
 		ele = j++;
 	auto h = [&](const int & j, const int & k) {return consumers[j].second > consumers[k].second; };
 	sort(order_of_consumer.begin(), order_of_consumer.end(), h);         //消费节点寻路排序，以消耗量为依据
-
-
-
-
-	auto seed = candidate_server.begin() + amount_of_server - 1;
-	set<int>::size_type size_of_complementary = 0;
-	for (auto source = seed; source != candidate_server.cbegin(); --source)
+	int k = 0;
+	for (auto it = candidate_server.cbegin(); it != candidate_server.cend(); ++it)
 	{
-		for (auto dest = seed; dest != candidate_server.end(); ++dest)
+		++k;
+		complementary.insert((*hops_tables[*it])[current_hops].cbegin(), (*hops_tables[*it])[current_hops].cend());
+		if (size_of_complementary < complementary.size() || net.comsumers == size_of_complementary)
 		{
-			swap(*source, *dest);
-			complementary.clear();
-			count_of_consumer.clear();
-			for (auto it = candidate_server.cbegin(); it != candidate_server.cbegin() + amount_of_server; ++it)
-			{
-				complementary.insert((*hops_tables[*it])[current_hops].cbegin(), (*hops_tables[*it])[current_hops].cend());
-				count_of_consumer.insert((*hops_tables[*it])[current_hops].cbegin(), (*hops_tables[*it])[current_hops].cend());
-			}
-			if (net.comsumers == complementary.size())
-			{
-				int throughtput = 0;  //候选服务点输出总带宽；
-				for (auto it = candidate_server.cbegin(); it != candidate_server.cbegin() + amount_of_server; ++it)
-					for (auto node = nettopo[*it].cbegin(); node != nettopo[*it].cend(); ++node)
-						throughtput += node->second.first;
-				if (throughtput > net.total_consumption)
-				{
-					auto q = [&](const int & j, const int & k) {return count_of_consumer.count(j) < count_of_consumer.count(k); };
-					stable_sort(order_of_consumer.begin(), order_of_consumer.end(), q);               //对消费节点寻路排序，以当前跳数下到达设施点数为依据
-					for (auto & node : nodes)
-						node.set_service_node(false);
-					for (auto it = candidate_server.cbegin(); it != candidate_server.cbegin() + amount_of_server; ++it)
-						nodes[*it].set_service_node(true);
+			servers.insert(*it);
+			count_of_consumer.insert((*hops_tables[*it])[current_hops].cbegin(), (*hops_tables[*it])[current_hops].cend());
+			size_of_complementary = complementary.size();
+			nodes[*it].set_service_node(true);
 
-#ifdef _TEST
-					for (auto it = candidate_server.cbegin(); it != candidate_server.cbegin() + amount_of_server; ++it)
-						cout << *it << ends;
-					cout << endl;
-					for (auto it = count_of_consumer.cbegin(); it != count_of_consumer.cend(); ++it)
-						cout << *it << ends;
-					cout << endl;
-					for (auto it = order_of_consumer.cbegin(); it != order_of_consumer.cend(); ++it)
-						cout << *it << ends;
-					cout << endl << endl;
-#endif
-					return set<int>(candidate_server.cbegin(), candidate_server.cbegin() + amount_of_server);
-				}
+			for (auto node = nettopo[*it].cbegin(); node != nettopo[*it].cend(); ++node)
+				throughtput += node->second.first;
 
-				}
-			if (size_of_complementary < complementary.size())
+			if (amount_of_server  == servers.size()  ||(net.comsumers == size_of_complementary && throughtput > net.total_consumption))
 			{
-				size_of_complementary = complementary.size();
-				continue;
-			}
-			if (size_of_complementary == complementary.size())
-			{
-				int source_bandwidth = 0, dest_bandwidth = 0;
-				for (auto it = nettopo[*source].cbegin(); it != nettopo[*source].cend(); ++it)
-				{
-					source_bandwidth += it->second.first;
-				}
-				for (auto it = nettopo[*dest].cbegin(); it != nettopo[*dest].cend(); ++it)
-				{
-					dest_bandwidth += it->second.first;
-				}
-				if (source_bandwidth >= dest_bandwidth && dest >= candidate_server.cbegin() + amount_of_server)
-					continue;
-			}
-			swap(*source, *dest);
+				auto q = [&](const int & j, const int & k) {return count_of_consumer.count(j) < count_of_consumer.count(k); };
+				stable_sort(order_of_consumer.begin(), order_of_consumer.end(), q);               //对消费节点寻路排序，以当前跳数下到达设施点数为依据
+				return servers;
 			}
 		}
-
-	auto q = [&](const int & j, const int & k) {return count_of_consumer.count(j) < count_of_consumer.count(k); };
-	sort(order_of_consumer.begin(), order_of_consumer.end(), q);
-	for (auto & node : nodes)
-		node.set_service_node(false);
-	for (auto it = candidate_server.cbegin(); it != candidate_server.cbegin() + amount_of_server; ++it)
-		nodes[*it].set_service_node(true);
-	return set<int>(candidate_server.cbegin(), candidate_server.cbegin() + amount_of_server);
 	}
+	k;
+	return servers;
+
+
+
+	//	auto seed = candidate_server.begin() + amount_of_server - 1;
+	//	
+	//	for (auto source = seed; source != candidate_server.cbegin(); --source)
+	//	{
+	//		for (auto dest = seed; dest != candidate_server.end(); ++dest)
+	//		{
+	//			swap(*source, *dest);
+	//			complementary.clear();
+	//			count_of_consumer.clear();
+	//			for (auto it = candidate_server.cbegin(); it != candidate_server.cbegin() + amount_of_server; ++it)
+	//			{
+	//				complementary.insert((*hops_tables[*it])[current_hops].cbegin(), (*hops_tables[*it])[current_hops].cend());
+	//				count_of_consumer.insert((*hops_tables[*it])[current_hops].cbegin(), (*hops_tables[*it])[current_hops].cend());
+	//			}
+	//			if (net.comsumers == complementary.size())
+	//			{
+	//				int throughtput = 0;  //候选服务点输出总带宽；
+	//				for (auto it = candidate_server.cbegin(); it != candidate_server.cbegin() + amount_of_server; ++it)
+	//					for (auto node = nettopo[*it].cbegin(); node != nettopo[*it].cend(); ++node)
+	//						throughtput += node->second.first;
+	//				if (throughtput > net.total_consumption)
+	//				{
+	//					auto q = [&](const int & j, const int & k) {return count_of_consumer.count(j) < count_of_consumer.count(k); };
+	//					stable_sort(order_of_consumer.begin(), order_of_consumer.end(), q);               //对消费节点寻路排序，以当前跳数下到达设施点数为依据
+	//					for (auto & node : nodes)
+	//						node.set_service_node(false);
+	//					for (auto it = candidate_server.cbegin(); it != candidate_server.cbegin() + amount_of_server; ++it)
+	//						nodes[*it].set_service_node(true);
+	//
+	//#ifdef _TEST
+	//					for (auto it = candidate_server.cbegin(); it != candidate_server.cbegin() + amount_of_server; ++it)
+	//						cout << *it << ends;
+	//					cout << endl;
+	//					for (auto it = count_of_consumer.cbegin(); it != count_of_consumer.cend(); ++it)
+	//						cout << *it << ends;
+	//					cout << endl;
+	//					for (auto it = order_of_consumer.cbegin(); it != order_of_consumer.cend(); ++it)
+	//						cout << *it << ends;
+	//					cout << endl << endl;
+	//#endif
+	//					return set<int>(candidate_server.cbegin(), candidate_server.cbegin() + amount_of_server);
+	//				}
+	//
+	//				}
+	//			if (size_of_complementary < complementary.size())
+	//			{
+	//				size_of_complementary = complementary.size();
+	//				continue;
+	//			}
+	//			if (size_of_complementary == complementary.size())
+	//			{
+	//				int source_bandwidth = 0, dest_bandwidth = 0;
+	//				for (auto it = nettopo[*source].cbegin(); it != nettopo[*source].cend(); ++it)
+	//				{
+	//					source_bandwidth += it->second.first;
+	//				}
+	//				for (auto it = nettopo[*dest].cbegin(); it != nettopo[*dest].cend(); ++it)
+	//				{
+	//					dest_bandwidth += it->second.first;
+	//				}
+	//				if (source_bandwidth >= dest_bandwidth && dest >= candidate_server.cbegin() + amount_of_server)
+	//					continue;
+	//			}
+	//			swap(*source, *dest);
+	//			}
+	//		}
+	//
+	//	auto q = [&](const int & j, const int & k) {return count_of_consumer.count(j) < count_of_consumer.count(k); };
+	//	sort(order_of_consumer.begin(), order_of_consumer.end(), q);
+	//	for (auto & node : nodes)
+	//		node.set_service_node(false);
+	//	for (auto it = candidate_server.cbegin(); it != candidate_server.cbegin() + amount_of_server; ++it)
+	//		nodes[*it].set_service_node(true);
+	//	return set<int>(candidate_server.cbegin(), candidate_server.cbegin() + amount_of_server);
+}
 
 int solution::get_hops_tables(int mhops)
 {
@@ -188,18 +213,15 @@ int solution::get_hops_tables(int mhops)
 		vector<set<int>> node_of_path;                                                   //从某一节点出发所经节点
 		node_of_path.push_back(set<int>{i});
 
-		for (int j = 0; j != mhops+1; ++j)
+		for (int j = 0; j != mhops + 1; ++j)
 		{
 			node_of_path.push_back(set<int>());
 			for (auto it = node_of_path[j].cbegin(); it != node_of_path[j].cend(); ++it)
 			{
 
-				
+
 				if (-1 != nodes[*it].consume_number())                                   //判断当前节点是否为消费节点
-				{
 					(*hops_table)[j].insert(nodes[*it].consume_number());
-					continue;
-				}
 				//for (auto p = nettopo[*it].cbegin(); p != nettopo[*it].cend(); ++p)      //加入当前节点所有下一跳节点
 				//	node_of_path[j + 1].insert(p->first);
 				node_of_path[j + 1].insert(links[*it].cbegin(), links[*it].cend());

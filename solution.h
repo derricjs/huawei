@@ -27,7 +27,7 @@ public:
 	solution(char * topo[MAX_EDGE_NUM]); //将读入数据转换为相应数据结构
 	void print(std::ostream & os);
 	std::set<int> search_dev_node(const int hops);        //返回所有节点在max_hops跳数内到达的消费节点
-	int get_hops_tables(int mhops = INT_MAX);                                //返回最大条数，并获取跳数与消费节点关系表
+	int get_hops_tables(int mhops = 6);                                //返回最大条数，并获取跳数与消费节点关系表
 	void routing();                                       //路由
 private:
 	network net;                                                       //网络概况
