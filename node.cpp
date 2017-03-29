@@ -35,9 +35,9 @@ int node::set_consume_node(int consume_number, int band_consumption)
 	return consumption;
 }
 
-double node::set_level()
+void node::set_level(int new_level)
 {
-	return 0.0;
+	level = new_level;
 }
 
 int node::show_bandwidth(int seq_number) const

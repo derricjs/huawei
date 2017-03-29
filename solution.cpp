@@ -60,12 +60,12 @@ void solution::print(ostream & os)
 		os << node << endl << endl;
 }
 
-set<int> solution::search_dev_node(const int current_hops)
+vector<int> solution::search_dev_node(const int current_hops)
 {
 	//int amount_of_server = ceil((1 - net.comsumers)*current_hops / static_cast<double>(MAX_HOPS)) + net.comsumers;  //服务器数量
 	int amount_of_server = net.comsumers / 4;
 	vector<int> candidate_server(net.netnodes);        //候选服务节点
-	set<int> servers;
+	vector<int> servers;
 	int i = 0;
 	for (auto & element : candidate_server)
 	{
@@ -105,7 +105,7 @@ set<int> solution::search_dev_node(const int current_hops)
 		complementary.insert((*hops_tables[*it])[current_hops].cbegin(), (*hops_tables[*it])[current_hops].cend());
 		if (size_of_complementary < complementary.size() || net.comsumers == size_of_complementary)
 		{
-			servers.insert(*it);
+			servers.push_back(*it);
 			count_of_consumer.insert((*hops_tables[*it])[current_hops].cbegin(), (*hops_tables[*it])[current_hops].cend());
 			size_of_complementary = complementary.size();
 			nodes[*it].set_service_node(true);
@@ -261,7 +261,34 @@ int solution::get_hops_tables(int mhops)
 
 }
 
-void solution::routing()
+void solution::routing(vector<int>& servers)
 {
+	set_nodes_level(servers);
+}
 
+void solution::set_nodes_level(vector<int>& servers)
+{
+	vector<set<int>> node_of_path;
+	for (auto & server : servers)
+	{
+		nodes[server].set_level(0);
+		node_of_path.push_back(set<int>{server});
+		for (int i = 0; i != 4; ++i)
+		{
+			node_of_path.push_back(set<int>());
+			for (auto it = node_of_path[i].cbegin(); it != node_of_path[i].cend(); ++it)
+			{
+				for (auto p = nettopo[*it].cbegin(); p != nettopo[*it].cend(); ++p)
+				{
+					int new_level = nodes[*it].show_level() + p->second.second;
+					if (new_level < nodes[p->first].show_level())
+					{
+						nodes[p->first].set_level(new_level);
+						node_of_path[i + 1].insert(p->first);
+					}
+						
+				}
+			}
+		}
+	}
 }
