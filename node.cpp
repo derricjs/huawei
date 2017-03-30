@@ -18,7 +18,7 @@ int node::consume_number() const
 	return con_number;
 }
 
-double node::show_level() const
+int node::show_level() const
 {
 	return level;
 }

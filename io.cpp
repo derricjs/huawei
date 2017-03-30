@@ -12,7 +12,7 @@
 #define MAX_LINE_LEN 55000
 #define INLINE  static __inline
 
-//#define _DEBUG
+
 #ifdef _DEBUG
 #define PRINT   printf
 #else

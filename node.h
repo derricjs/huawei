@@ -10,7 +10,7 @@ public:
 	int seqnumber() const;                                                            //返回节点序号
 	bool service_node() const;                                                        //是否为服务节点
 	int consume_number() const;                                                       //显示所连接的消费节点序号
-	double show_level() const;                                                        //显示优先级
+	int show_level() const;                                                        //显示优先级
 	void set_service_node(bool is_server);                                                          //设置为服务节点
 	int set_consume_node(int consume_number, int band_consumption);                   //设置为与消费节点相邻，并设置消费带宽
 	void set_level(int level);                                                               //设置节点优先级；

@@ -2,6 +2,9 @@
 using namespace std;
 solution::solution(char * topo[MAX_EDGE_NUM])
 {
+	ftime(&rawtime);
+	s = rawtime.time;
+
 	string num;
 	istringstream record(topo[0]);
 	record >> num;
@@ -23,8 +26,8 @@ solution::solution(char * topo[MAX_EDGE_NUM])
 		record >> source >> end >> bandwidth >> price;
 		nettopo[stoi(source)][stoi(end)] = make_pair(stoi(bandwidth), stoi(price));
 		nettopo[stoi(end)][stoi(source)] = make_pair(stoi(bandwidth), stoi(price));
-		links[stoi(source)].insert(stoi(end));
-		links[stoi(end)].insert(stoi(source));
+		links[stoi(source)].push_back(stoi(end));
+		links[stoi(end)].push_back(stoi(source));
 		net.price_of_perGbit += stod(bandwidth)*stod(price);
 		total_bandwidth += stod(bandwidth);
 	}
@@ -63,7 +66,7 @@ void solution::print(ostream & os)
 vector<int> solution::search_dev_node(const int current_hops)
 {
 	//int amount_of_server = ceil((1 - net.comsumers)*current_hops / static_cast<double>(MAX_HOPS)) + net.comsumers;  //服务器数量
-	int amount_of_server = net.comsumers / 4;
+	int amount_of_server = net.comsumers / 2;
 	vector<int> candidate_server(net.netnodes);        //候选服务节点
 	vector<int> servers;
 	int i = 0;
@@ -92,11 +95,11 @@ vector<int> solution::search_dev_node(const int current_hops)
 	multiset<int> count_of_consumer; //重复关键字的complementary
 	int throughtput = 0;  //候选服务点输出总带宽；
 	set<int>::size_type size_of_complementary = 0;
-	vector<int> order_of_consumer(net.comsumers); //寻路时遍历消费节点的顺序；
+	order_of_consumer.resize(net.comsumers); //寻路时遍历消费节点的顺序；
 	int j = 0;
 	for (auto & ele : order_of_consumer)
 		ele = j++;
-	auto h = [&](const int & j, const int & k) {return consumers[j].second > consumers[k].second; };
+	auto h = [&](const int & j, const int & k) {return consumers[j].second < consumers[k].second; };
 	sort(order_of_consumer.begin(), order_of_consumer.end(), h);         //消费节点寻路排序，以消耗量为依据
 	int k = 0;
 	for (auto it = candidate_server.cbegin(); it != candidate_server.cend(); ++it)
@@ -113,7 +116,7 @@ vector<int> solution::search_dev_node(const int current_hops)
 			for (auto node = nettopo[*it].cbegin(); node != nettopo[*it].cend(); ++node)
 				throughtput += node->second.first;
 
-			if (amount_of_server  == servers.size()  ||(net.comsumers == size_of_complementary && throughtput > net.total_consumption))
+			if (amount_of_server == servers.size() || (net.comsumers == size_of_complementary && throughtput > 3 * net.total_consumption))
 			{
 				auto q = [&](const int & j, const int & k) {return count_of_consumer.count(j) < count_of_consumer.count(k); };
 				stable_sort(order_of_consumer.begin(), order_of_consumer.end(), q);               //对消费节点寻路排序，以当前跳数下到达设施点数为依据
@@ -121,7 +124,6 @@ vector<int> solution::search_dev_node(const int current_hops)
 			}
 		}
 	}
-	k;
 	return servers;
 
 
@@ -261,32 +263,128 @@ int solution::get_hops_tables(int mhops)
 
 }
 
-void solution::routing(vector<int>& servers)
+vector<vector<int>> solution::routing(vector<int>& servers)
 {
-	set_nodes_level(servers);
+	vector<vector<int>> routes;
+	vector<int> route;
+	set<int> number_of_server_used;
+	int max_hops_of_routing = 7;//最大允许路由跳数
+
+	for (int j = 0; j != 1000; ++j)
+	{
+		set_nodes_level(servers);
+		for (auto & consumer : order_of_consumer)
+		{
+			if (0 == consumers[consumer].second)
+				continue;
+			route.clear();
+			route.insert(route.begin(), { 0,consumer, consumers[consumer].first });
+			int min_bandwidth = 1000; //路由上的最小带宽
+			if (0 == nodes[consumers[consumer].first].show_level())
+			{
+				route[0] = consumers[consumer].second;
+				consumers[consumer].second = 0;
+				routes.push_back(route);
+				continue;
+			}
+				
+			for (int i = 2; i != max_hops_of_routing + 2; ++i)
+			{
+				auto f = [&](const int j, const int k) {return (nodes[j].show_level() + nettopo[route[i]][j].second) < (nodes[k].show_level() + nettopo[route[i]][j].second); };
+				sort(links[route[i]].begin(), links[route[i]].end(), f);
+				if (nodes[route[i]].show_level() < nodes[links[route[i]][0]].show_level())
+					break;
+				route.push_back(links[route[i]][0]);
+				if (min_bandwidth > nettopo[route[i]][route[i + 1]].first)
+					min_bandwidth = nettopo[route[i]][route[i + 1]].first;
+				if (0 == nodes[route[i + 1]].show_level())
+				{
+
+					route[0] = min_bandwidth < consumers[consumer].second ? min_bandwidth : consumers[consumer].second;
+					consumers[consumer].second -= route[0];
+					for (auto it = route.begin() + 2; it != route.end() - 1; ++it)
+					{
+						nettopo[*it][*(it + 1)].first -= route[0];
+						if (0 == nettopo[*it][*(it + 1)].first)
+							links[*it].erase(links[*it].begin());
+					}
+					routes.push_back(route);
+
+					break;
+				}
+			}
+
+		}
+		static int Q = 0, num = 0;
+		int q = 0;
+		for (auto& consumer : consumers)
+		{
+			if (0 == consumer.second.second)
+				++q;
+		}
+		(Q == q) ? ++num : num = 0;
+		Q = q;
+		ftime(&rawtime);
+		if (4 == num || rawtime.time - s > 60)
+		{
+			//vector<int> direct_mode;
+			for (auto& consumer : consumers)
+			{
+				if (consumer.second.second != 0)
+				{
+
+					for (auto it = routes.begin(); it != routes.end(); ++it)
+					{
+
+						for (auto p = it->begin() + 2; p != it->end(); ++p)
+						{
+							if (*p == consumer.second.first)
+							{
+								it->erase(++p, it->end());
+								break;
+							}
+						}
+					}
+					routes.push_back(vector<int>{ consumer.second.second, consumer.first, consumer.second.first});
+				}
+
+			}
+			return routes;
+		}
+		for (auto& route : routes)
+		{
+			number_of_server_used.insert(route.back());
+		}
+		cout << q << ends << number_of_server_used.size() << endl;
+	}
+	return routes;
 }
 
 void solution::set_nodes_level(vector<int>& servers)
 {
 	vector<set<int>> node_of_path;
+	for (auto & node : nodes)
+		node.set_level(100);
 	for (auto & server : servers)
 	{
 		nodes[server].set_level(0);
 		node_of_path.push_back(set<int>{server});
-		for (int i = 0; i != 4; ++i)
+		for (int i = 0; i != 5; ++i)
 		{
 			node_of_path.push_back(set<int>());
 			for (auto it = node_of_path[i].cbegin(); it != node_of_path[i].cend(); ++it)
 			{
 				for (auto p = nettopo[*it].cbegin(); p != nettopo[*it].cend(); ++p)
 				{
-					int new_level = nodes[*it].show_level() + p->second.second;
-					if (new_level < nodes[p->first].show_level())
+					if (0 != nettopo[p->first][*it].first)
 					{
-						nodes[p->first].set_level(new_level);
-						node_of_path[i + 1].insert(p->first);
+						int new_level = nodes[*it].show_level() + p->second.second;
+						if (new_level < nodes[p->first].show_level())
+						{
+							nodes[p->first].set_level(new_level);
+							node_of_path[i + 1].insert(p->first);
+						}
 					}
-						
 				}
 			}
 		}
