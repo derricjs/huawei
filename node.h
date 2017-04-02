@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <iostream>
 #include <set>
 class node
@@ -7,22 +7,22 @@ public:
 	node(int snum, bool ser_node, int con_node, int consumption, int level) :sequence_number(snum), is_service_node(ser_node), con_number(con_node),consumption(consumption), level(level) { ++node_exist; }
 	node() :node(node_exist, false, -1, 0, 1000) {};
 	//node(int snum, double level ) :node(snum,false,-1,0,0){};
-	int seqnumber() const;                                                            //·µ»Ø½ÚµãĞòºÅ
-	bool service_node() const;                                                        //ÊÇ·ñÎª·şÎñ½Úµã
-	int consume_number() const;                                                       //ÏÔÊ¾ËùÁ¬½ÓµÄÏû·Ñ½ÚµãĞòºÅ
-	int show_level() const;                                                        //ÏÔÊ¾ÓÅÏÈ¼¶
-	void set_service_node(bool is_server);                                                          //ÉèÖÃÎª·şÎñ½Úµã
-	int set_consume_node(int consume_number, int band_consumption);                   //ÉèÖÃÎªÓëÏû·Ñ½ÚµãÏàÁÚ£¬²¢ÉèÖÃÏû·Ñ´ø¿í
-	void set_level(int level);                                                               //ÉèÖÃ½ÚµãÓÅÏÈ¼¶£»
-	int show_bandwidth(int seq_number) const;                                         //ÏÔÊ¾³ıÊäÈë½ÚµãÍâÆäËûÏàÁÚ½Úµãµ½¸Ã½ÚµãµÄ´ø¿íÓàÁ¿£»
-	friend std::ostream & operator << (std::ostream & os, const node &item);          //ÖØÔØÊä³öÔËËã·û£»
+	int seqnumber() const;                                                            //è¿”å›èŠ‚ç‚¹åºå·
+	bool service_node() const;                                                        //æ˜¯å¦ä¸ºæœåŠ¡èŠ‚ç‚¹
+	int consume_number() const;                                                       //æ˜¾ç¤ºæ‰€è¿æ¥çš„æ¶ˆè´¹èŠ‚ç‚¹åºå·
+	int show_level() const;                                                        //æ˜¾ç¤ºä¼˜å…ˆçº§
+	void set_service_node(bool is_server);                                                          //è®¾ç½®ä¸ºæœåŠ¡èŠ‚ç‚¹
+	int set_consume_node(int consume_number, int band_consumption);                   //è®¾ç½®ä¸ºä¸æ¶ˆè´¹èŠ‚ç‚¹ç›¸é‚»ï¼Œå¹¶è®¾ç½®æ¶ˆè´¹å¸¦å®½
+	void set_level(int level);                                                               //è®¾ç½®èŠ‚ç‚¹ä¼˜å…ˆçº§ï¼›
+	int show_bandwidth(int seq_number) const;                                         //æ˜¾ç¤ºé™¤è¾“å…¥èŠ‚ç‚¹å¤–å…¶ä»–ç›¸é‚»èŠ‚ç‚¹åˆ°è¯¥èŠ‚ç‚¹çš„å¸¦å®½ä½™é‡ï¼›
+	friend std::ostream & operator << (std::ostream & os, const node &item);          //é‡è½½è¾“å‡ºè¿ç®—ç¬¦ï¼›
 private:
-	static int node_exist;  //µ±Ç°ÍøÂç½ÚµãÊıÁ¿£¬³õÊ¼ÎªÁã£¬ÓÃÓÚÄ¬ÈÏ¹¹Ôìº¯Êı
-	int sequence_number;    //½ÚµãĞòºÅ£»
-	bool is_service_node;   //ÊÇ·ñÎª·şÎñ½Úµã£»
-	int con_number;         //Ïû·Ñ½ÚµãºÅ£¬²»Á¬½ÓÏû·Ñ½ÚµãÔòÎª-1£»
-	int consumption;        //Á¬½ÓµÄÏû·Ñ½ÚµãËùĞè´ø¿í£»
- 	//int bandwidth;          //Á¬½ÓµÄ´ø¿í
-	int level;           //½ÚµãÓÅÏÈ¼¶£»
+	static int node_exist;  //å½“å‰ç½‘ç»œèŠ‚ç‚¹æ•°é‡ï¼Œåˆå§‹ä¸ºé›¶ï¼Œç”¨äºé»˜è®¤æ„é€ å‡½æ•°
+	int sequence_number;    //èŠ‚ç‚¹åºå·ï¼›
+	bool is_service_node;   //æ˜¯å¦ä¸ºæœåŠ¡èŠ‚ç‚¹ï¼›
+	int con_number;         //æ¶ˆè´¹èŠ‚ç‚¹å·ï¼Œä¸è¿æ¥æ¶ˆè´¹èŠ‚ç‚¹åˆ™ä¸º-1ï¼›
+	int consumption;        //è¿æ¥çš„æ¶ˆè´¹èŠ‚ç‚¹æ‰€éœ€å¸¦å®½ï¼›
+ 	//int bandwidth;          //è¿æ¥çš„å¸¦å®½
+	int level;           //èŠ‚ç‚¹ä¼˜å…ˆçº§ï¼›
 };
 std::ostream & operator << (std::ostream & os, const node &item);

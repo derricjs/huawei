@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "lib_io.h"
 #include <map>
 #include <set>
@@ -16,31 +16,31 @@
 //#define _TEST
 struct network
 {
-	int netnodes;       //ÍøÂç½ÚµãÊı
-	int links;          //ÍøÂçÁ´Â·Êı
-	int comsumers;      //Ïû·Ñ½ÚµãÊıÁ¿ 
-	int cost_of_server; //·şÎñÆ÷·ÑÓÃ
-	int total_consumption; //´ø¿í×ÜĞèÇó
-	double price_of_perGbit; //µ¥Î»´ø¿í¼Û¸ñ
+	int netnodes;       //ç½‘ç»œèŠ‚ç‚¹æ•°
+	int links;          //ç½‘ç»œé“¾è·¯æ•°
+	int comsumers;      //æ¶ˆè´¹èŠ‚ç‚¹æ•°é‡ 
+	int cost_of_server; //æœåŠ¡å™¨è´¹ç”¨
+	int total_consumption; //å¸¦å®½æ€»éœ€æ±‚
+	double price_of_perGbit; //å•ä½å¸¦å®½ä»·æ ¼
 };
 
 class solution
 {
 public:
-	solution(char * topo[MAX_EDGE_NUM]); //½«¶ÁÈëÊı¾İ×ª»»ÎªÏàÓ¦Êı¾İ½á¹¹
+	solution(char * topo[MAX_EDGE_NUM]); //å°†è¯»å…¥æ•°æ®è½¬æ¢ä¸ºç›¸åº”æ•°æ®ç»“æ„
 	void print(std::ostream & os);
-	std::vector<int> search_dev_node(const int hops);        //·µ»ØËùÓĞ½ÚµãÔÚmax_hopsÌøÊıÄÚµ½´ïµÄÏû·Ñ½Úµã
-	int get_hops_tables(int mhops = 100);                                //·µ»Ø×î´óÌõÊı£¬²¢»ñÈ¡ÌøÊıÓëÏû·Ñ½Úµã¹ØÏµ±í
-	std::vector<std::vector<int>> routing(std::vector<int>& servers);                                       //Â·ÓÉ
+	std::vector<int> search_dev_node(const int hops);        //è¿”å›æ‰€æœ‰èŠ‚ç‚¹åœ¨max_hopsè·³æ•°å†…åˆ°è¾¾çš„æ¶ˆè´¹èŠ‚ç‚¹
+	int get_hops_tables(int mhops = 10);                                //è¿”å›æœ€å¤§æ¡æ•°ï¼Œå¹¶è·å–è·³æ•°ä¸æ¶ˆè´¹èŠ‚ç‚¹å…³ç³»è¡¨
+	std::vector<std::vector<int>> routing(std::vector<int>& servers);                                       //è·¯ç”±
 private:
 	void set_nodes_level(std::vector<int>& servers);
-	network net;                                                       //ÍøÂç¸Å¿ö
-	std::map<int, std::map<int, std::pair<int, int>>> nettopo;         //ÍøÂçÍØÆË½á¹¹,·Ö±ğ±íÊ¾½ÚµãºÅ¡¢½ÚµãºÅ¡¢ºóÒ»½ÚµãÁ÷ÏòÇ°Ò»½ÚµãµÄ´ø¿í¡¢µ¥Î»´ø¿í×âÓÃ·ÑÓÃ
+	network net;                                                       //ç½‘ç»œæ¦‚å†µ
+	std::map<int, std::map<int, std::pair<int, int>>> nettopo;         //ç½‘ç»œæ‹“æ‰‘ç»“æ„,åˆ†åˆ«è¡¨ç¤ºèŠ‚ç‚¹å·ã€èŠ‚ç‚¹å·ã€åä¸€èŠ‚ç‚¹æµå‘å‰ä¸€èŠ‚ç‚¹çš„å¸¦å®½ã€å•ä½å¸¦å®½ç§Ÿç”¨è´¹ç”¨
 	std::map<int, std::vector<int>> links;
-	std::vector<node> nodes;                                           //½Úµã
-	std::vector<std::shared_ptr<std::vector<std::set<int>>>> hops_tables;                  //ÌøÊıÓëÏû·Ñµã¹ØÏµ±í
-	std::map<int, std::pair<int, int>> consumers;                            //Ïû·Ñ½ÚµãÓëÏà¹ØÁªµÄÆÕÍ¨½ÚµãÓë´ø¿íĞèÇó
-	std::vector<int> order_of_consumer;             //Ïû·Ñ½Úµã±éÀúË³Ğò
+	std::vector<node> nodes;                                           //èŠ‚ç‚¹
+	std::vector<std::shared_ptr<std::vector<std::set<int>>>> hops_tables;                  //è·³æ•°ä¸æ¶ˆè´¹ç‚¹å…³ç³»è¡¨
+	std::map<int, std::pair<int, int>> consumers;                            //æ¶ˆè´¹èŠ‚ç‚¹ä¸ç›¸å…³è”çš„æ™®é€šèŠ‚ç‚¹ä¸å¸¦å®½éœ€æ±‚
+	std::vector<int> order_of_consumer;             //æ¶ˆè´¹èŠ‚ç‚¹éå†é¡ºåº
 	int MAX_HOPS = 0;
 	unsigned long s;
 	struct timeb rawtime;

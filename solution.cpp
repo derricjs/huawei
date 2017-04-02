@@ -1,4 +1,4 @@
-#include "solution.h"
+ï»¿#include "solution.h"
 using namespace std;
 solution::solution(char * topo[MAX_EDGE_NUM])
 {
@@ -65,9 +65,9 @@ void solution::print(ostream & os)
 
 vector<int> solution::search_dev_node(const int current_hops)
 {
-	//int amount_of_server = ceil((1 - net.comsumers)*current_hops / static_cast<double>(MAX_HOPS)) + net.comsumers;  //·şÎñÆ÷ÊıÁ¿
-	int amount_of_server = net.comsumers / 2;
-	vector<int> candidate_server(net.netnodes);        //ºòÑ¡·şÎñ½Úµã
+	//int amount_of_server = ceil((1 - net.comsumers)*current_hops / static_cast<double>(MAX_HOPS)) + net.comsumers;  //æœåŠ¡å™¨æ•°é‡
+	int amount_of_server = net.comsumers*0.75;
+	vector<int> candidate_server(net.netnodes);        //å€™é€‰æœåŠ¡èŠ‚ç‚¹
 	vector<int> servers;
 	int i = 0;
 	for (auto & element : candidate_server)
@@ -88,25 +88,23 @@ vector<int> solution::search_dev_node(const int current_hops)
 		}
 		return j_bandwidth > k_bandwidth;
 	};
-	sort(candidate_server.begin(), candidate_server.end(), g);           // °´½ÚµãÍÌÍÂÁ¿ÅÅĞò         
-	stable_sort(candidate_server.begin(), candidate_server.end(), f);   //ÔÚÉÏ´ÎÅÅĞòµÄ»ù´¡ÉÏ£¬°´µ±Ç°ÌøÊıµ½´ïÏû·Ñ½ÚµãÊıÁ¿ÅÅĞò
+	sort(candidate_server.begin(), candidate_server.end(), g);           // æŒ‰èŠ‚ç‚¹ååé‡æ’åº         
+	stable_sort(candidate_server.begin(), candidate_server.end(), f);   //åœ¨ä¸Šæ¬¡æ’åºçš„åŸºç¡€ä¸Šï¼ŒæŒ‰å½“å‰è·³æ•°åˆ°è¾¾æ¶ˆè´¹èŠ‚ç‚¹æ•°é‡æ’åº
 
-	set<int> complementary;      //»¥²¹ĞÔ¼ì²é
-	multiset<int> count_of_consumer; //ÖØ¸´¹Ø¼ü×ÖµÄcomplementary
-	int throughtput = 0;  //ºòÑ¡·şÎñµãÊä³ö×Ü´ø¿í£»
+	set<int> complementary;      //äº’è¡¥æ€§æ£€æŸ¥
+	multiset<int> count_of_consumer; //é‡å¤å…³é”®å­—çš„complementary
+	int throughtput = 0;  //å€™é€‰æœåŠ¡ç‚¹è¾“å‡ºæ€»å¸¦å®½ï¼›
 	set<int>::size_type size_of_complementary = 0;
-	order_of_consumer.resize(net.comsumers); //Ñ°Â·Ê±±éÀúÏû·Ñ½ÚµãµÄË³Ğò£»
+	order_of_consumer.resize(net.comsumers); //å¯»è·¯æ—¶éå†æ¶ˆè´¹èŠ‚ç‚¹çš„é¡ºåºï¼›
 	int j = 0;
 	for (auto & ele : order_of_consumer)
 		ele = j++;
-	auto h = [&](const int & j, const int & k) {return consumers[j].second < consumers[k].second; };
-	sort(order_of_consumer.begin(), order_of_consumer.end(), h);         //Ïû·Ñ½ÚµãÑ°Â·ÅÅĞò£¬ÒÔÏûºÄÁ¿ÎªÒÀ¾İ
-	int k = 0;
+	auto h = [&](const int & j, const int & k) {return consumers[j].second > consumers[k].second; };
+	sort(order_of_consumer.begin(), order_of_consumer.end(), h);         //æ¶ˆè´¹èŠ‚ç‚¹å¯»è·¯æ’åºï¼Œä»¥æ¶ˆè€—é‡ä¸ºä¾æ®
 	for (auto it = candidate_server.cbegin(); it != candidate_server.cend(); ++it)
 	{
-		++k;
 		complementary.insert((*hops_tables[*it])[current_hops].cbegin(), (*hops_tables[*it])[current_hops].cend());
-		if (size_of_complementary < complementary.size() || net.comsumers == size_of_complementary)
+		if (size_of_complementary  <= complementary.size() || net.comsumers == size_of_complementary)
 		{
 			servers.push_back(*it);
 			count_of_consumer.insert((*hops_tables[*it])[current_hops].cbegin(), (*hops_tables[*it])[current_hops].cend());
@@ -116,10 +114,10 @@ vector<int> solution::search_dev_node(const int current_hops)
 			for (auto node = nettopo[*it].cbegin(); node != nettopo[*it].cend(); ++node)
 				throughtput += node->second.first;
 
-			if (amount_of_server == servers.size() || (net.comsumers == size_of_complementary && throughtput > 3 * net.total_consumption))
+			if (amount_of_server == servers.size() || (net.comsumers == size_of_complementary && throughtput > 2 * net.total_consumption))
 			{
 				auto q = [&](const int & j, const int & k) {return count_of_consumer.count(j) < count_of_consumer.count(k); };
-				stable_sort(order_of_consumer.begin(), order_of_consumer.end(), q);               //¶ÔÏû·Ñ½ÚµãÑ°Â·ÅÅĞò£¬ÒÔµ±Ç°ÌøÊıÏÂµ½´ïÉèÊ©µãÊıÎªÒÀ¾İ
+				stable_sort(order_of_consumer.begin(), order_of_consumer.end(), q);               //å¯¹æ¶ˆè´¹èŠ‚ç‚¹å¯»è·¯æ’åºï¼Œä»¥å½“å‰è·³æ•°ä¸‹åˆ°è¾¾è®¾æ–½ç‚¹æ•°ä¸ºä¾æ®
 				return servers;
 			}
 		}
@@ -144,14 +142,14 @@ vector<int> solution::search_dev_node(const int current_hops)
 	//			}
 	//			if (net.comsumers == complementary.size())
 	//			{
-	//				int throughtput = 0;  //ºòÑ¡·şÎñµãÊä³ö×Ü´ø¿í£»
+	//				int throughtput = 0;  //å€™é€‰æœåŠ¡ç‚¹è¾“å‡ºæ€»å¸¦å®½ï¼›
 	//				for (auto it = candidate_server.cbegin(); it != candidate_server.cbegin() + amount_of_server; ++it)
 	//					for (auto node = nettopo[*it].cbegin(); node != nettopo[*it].cend(); ++node)
 	//						throughtput += node->second.first;
 	//				if (throughtput > net.total_consumption)
 	//				{
 	//					auto q = [&](const int & j, const int & k) {return count_of_consumer.count(j) < count_of_consumer.count(k); };
-	//					stable_sort(order_of_consumer.begin(), order_of_consumer.end(), q);               //¶ÔÏû·Ñ½ÚµãÑ°Â·ÅÅĞò£¬ÒÔµ±Ç°ÌøÊıÏÂµ½´ïÉèÊ©µãÊıÎªÒÀ¾İ
+	//					stable_sort(order_of_consumer.begin(), order_of_consumer.end(), q);               //å¯¹æ¶ˆè´¹èŠ‚ç‚¹å¯»è·¯æ’åºï¼Œä»¥å½“å‰è·³æ•°ä¸‹åˆ°è¾¾è®¾æ–½ç‚¹æ•°ä¸ºä¾æ®
 	//					for (auto & node : nodes)
 	//						node.set_service_node(false);
 	//					for (auto it = candidate_server.cbegin(); it != candidate_server.cbegin() + amount_of_server; ++it)
@@ -168,7 +166,7 @@ vector<int> solution::search_dev_node(const int current_hops)
 	//						cout << *it << ends;
 	//					cout << endl << endl;
 	//#endif
-	//					return set<int>(candidate_server.cbegin(), candidate_server.cbegin() + amount_of_server);
+	//					return vector<int>(candidate_server.cbegin(), candidate_server.cbegin() + amount_of_server);
 	//				}
 	//
 	//				}
@@ -201,18 +199,18 @@ vector<int> solution::search_dev_node(const int current_hops)
 	//		node.set_service_node(false);
 	//	for (auto it = candidate_server.cbegin(); it != candidate_server.cbegin() + amount_of_server; ++it)
 	//		nodes[*it].set_service_node(true);
-	//	return set<int>(candidate_server.cbegin(), candidate_server.cbegin() + amount_of_server);
+	//	return vector<int>(candidate_server.cbegin(), candidate_server.cbegin() + amount_of_server);
 }
 
 int solution::get_hops_tables(int mhops)
 {
-	hops_tables.resize(net.netnodes);                                                     //±íÊ¾ËùÓĞ½ÚµãÔÚÒ»ÏµÁĞÌøÊıÏÂµ½´ïµÄÏû·Ñ½Úµã
-	vector<set<int>>::size_type max_hops = 0;                                                                     //×î´óÌøÊı
+	hops_tables.resize(net.netnodes);                                                     //è¡¨ç¤ºæ‰€æœ‰èŠ‚ç‚¹åœ¨ä¸€ç³»åˆ—è·³æ•°ä¸‹åˆ°è¾¾çš„æ¶ˆè´¹èŠ‚ç‚¹
+	vector<set<int>>::size_type max_hops = 0;                                                                     //æœ€å¤§è·³æ•°
 	for (int i = 0; i != net.netnodes; ++i)
 	{
-		auto hops_table = make_shared<vector<set<int>>>();                               //´æ·ÅÄ³Ò»½áµãÏàÓ¦ÌøÊıµ½´ïµÄÏû·Ñ½Úµã
+		auto hops_table = make_shared<vector<set<int>>>();                               //å­˜æ”¾æŸä¸€ç»“ç‚¹ç›¸åº”è·³æ•°åˆ°è¾¾çš„æ¶ˆè´¹èŠ‚ç‚¹
 		hops_table->push_back(set<int>());
-		vector<set<int>> node_of_path;                                                   //´ÓÄ³Ò»½Úµã³ö·¢Ëù¾­½Úµã
+		vector<set<int>> node_of_path;                                                   //ä»æŸä¸€èŠ‚ç‚¹å‡ºå‘æ‰€ç»èŠ‚ç‚¹
 		node_of_path.push_back(set<int>{i});
 
 		for (int j = 0; j != mhops + 1; ++j)
@@ -222,9 +220,9 @@ int solution::get_hops_tables(int mhops)
 			{
 
 
-				if (-1 != nodes[*it].consume_number())                                   //ÅĞ¶Ïµ±Ç°½ÚµãÊÇ·ñÎªÏû·Ñ½Úµã
+				if (-1 != nodes[*it].consume_number())                                   //åˆ¤æ–­å½“å‰èŠ‚ç‚¹æ˜¯å¦ä¸ºæ¶ˆè´¹èŠ‚ç‚¹
 					(*hops_table)[j].insert(nodes[*it].consume_number());
-				//for (auto p = nettopo[*it].cbegin(); p != nettopo[*it].cend(); ++p)      //¼ÓÈëµ±Ç°½ÚµãËùÓĞÏÂÒ»Ìø½Úµã
+				//for (auto p = nettopo[*it].cbegin(); p != nettopo[*it].cend(); ++p)      //åŠ å…¥å½“å‰èŠ‚ç‚¹æ‰€æœ‰ä¸‹ä¸€è·³èŠ‚ç‚¹
 				//	node_of_path[j + 1].insert(p->first);
 				node_of_path[j + 1].insert(links[*it].cbegin(), links[*it].cend());
 			}
@@ -240,14 +238,14 @@ int solution::get_hops_tables(int mhops)
 #ifdef _TEST
 	int k = 0;
 	ofstream os("hops_of_tables.txt");
-	os << "ËùÓĞ½ÚµãÌøÊıÓëËù´ïµÄÏû·Ñ½Úµã¹ØÏµ£º" << endl << endl;
+	os << "æ‰€æœ‰èŠ‚ç‚¹è·³æ•°ä¸æ‰€è¾¾çš„æ¶ˆè´¹èŠ‚ç‚¹å…³ç³»ï¼š" << endl << endl;
 	for (auto hops_table : hops_tables)
 	{
-		os << k << "ºÅ½Úµã:" << endl;
+		os << k << "å·èŠ‚ç‚¹:" << endl;
 		int j = 0;
 		for (auto & hop_table : *hops_table)
 		{
-			os << j << "Ìø£º" << "\t";
+			os << j << "è·³ï¼š" << "\t";
 			for (auto & end : hop_table)
 			{
 				os << end << ends;
@@ -268,18 +266,27 @@ vector<vector<int>> solution::routing(vector<int>& servers)
 	vector<vector<int>> routes;
 	vector<int> route;
 	set<int> number_of_server_used;
-	int max_hops_of_routing = 7;//×î´óÔÊĞíÂ·ÓÉÌøÊı
-
+	int max_hops_of_routing = 7;//æœ€å¤§å…è®¸è·¯ç”±è·³æ•°
+	set_nodes_level(servers);
+	//for (auto & consumer : order_of_consumer)
+	//{
+	//	if (net.cost_of_server < (nodes[consumers[consumer].first].show_level()*consumers[consumer].second))
+	//	{
+	//		routes.push_back({consumers[consumer].second, consumer, consumers[consumer].first});
+	//		consumers[consumer].second = 0;
+	//		servers.push_back(consumers[consumer].first);
+	//	}
+	//}
 	for (int j = 0; j != 1000; ++j)
 	{
-		set_nodes_level(servers);
+		
 		for (auto & consumer : order_of_consumer)
 		{
 			if (0 == consumers[consumer].second)
 				continue;
 			route.clear();
 			route.insert(route.begin(), { 0,consumer, consumers[consumer].first });
-			int min_bandwidth = 1000; //Â·ÓÉÉÏµÄ×îĞ¡´ø¿í
+			int min_bandwidth = 1000; //è·¯ç”±ä¸Šçš„æœ€å°å¸¦å®½
 			if (0 == nodes[consumers[consumer].first].show_level())
 			{
 				route[0] = consumers[consumer].second;
@@ -290,7 +297,7 @@ vector<vector<int>> solution::routing(vector<int>& servers)
 				
 			for (int i = 2; i != max_hops_of_routing + 2; ++i)
 			{
-				auto f = [&](const int j, const int k) {return (nodes[j].show_level() + nettopo[route[i]][j].second) < (nodes[k].show_level() + nettopo[route[i]][j].second); };
+				auto f = [&](const int m, const int n) {return (nodes[m].show_level() + nettopo[route[i]][m].second) < (nodes[n].show_level() + nettopo[route[i]][n].second); };
 				sort(links[route[i]].begin(), links[route[i]].end(), f);
 				if (nodes[route[i]].show_level() < nodes[links[route[i]][0]].show_level())
 					break;
@@ -309,7 +316,7 @@ vector<vector<int>> solution::routing(vector<int>& servers)
 							links[*it].erase(links[*it].begin());
 					}
 					routes.push_back(route);
-
+					set_nodes_level(servers);
 					break;
 				}
 			}
@@ -325,7 +332,7 @@ vector<vector<int>> solution::routing(vector<int>& servers)
 		(Q == q) ? ++num : num = 0;
 		Q = q;
 		ftime(&rawtime);
-		if (4 == num || rawtime.time - s > 60)
+		if (10 == num )//|| rawtime.time - s > 800)
 		{
 			//vector<int> direct_mode;
 			for (auto& consumer : consumers)
@@ -349,6 +356,24 @@ vector<vector<int>> solution::routing(vector<int>& servers)
 				}
 
 			}
+
+			//è®¡ç®—æ€»æˆæœ¬
+			int total_price = 0;
+			set<int> num_of_servers;
+			for (auto &route : routes)
+			{
+				int total_price_perGbit=0;
+				for (auto it = route.cbegin() + 2; it != route.cend()-1; ++it)
+				{
+					total_price_perGbit += nettopo[*it][*(it + 1)].second;
+				}
+				total_price += total_price_perGbit*route[0];
+				num_of_servers.insert(route.back());
+			}
+			total_price += num_of_servers.size()*net.cost_of_server;
+			cout << endl << total_price<<endl;
+
+
 			return routes;
 		}
 		for (auto& route : routes)
@@ -357,6 +382,10 @@ vector<vector<int>> solution::routing(vector<int>& servers)
 		}
 		cout << q << ends << number_of_server_used.size() << endl;
 	}
+	//for (auto &consumer : consumers)
+	//{
+	//	routes.push_back(vector<int>{consumer.second.second, consumer.first, consumer.second.first });
+	//}
 	return routes;
 }
 

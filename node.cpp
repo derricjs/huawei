@@ -1,4 +1,4 @@
-#include "node.h"
+ï»¿#include "node.h"
 using namespace std;
 int node::node_exist = 0;
 
@@ -47,9 +47,9 @@ int node::show_bandwidth(int seq_number) const
 
 ostream & operator << (std::ostream & os, const node &item)
 {
-	os << "½ÚµãÐòºÅ£º" << "\t" << item.sequence_number << endl << "·þÎñ½Úµã:" << "\t" << (item.is_service_node ? "ÊÇ" : "·ñ") << endl;
-	os << "Ïû·Ñ½Úµã£º" << "\t";
-	item.consume_number() >= 0 ? (os << "ÊÇ " << item.con_number << endl << "Ïû·Ñ´ø¿íÎª:" << "\t" << item.consumption << "Gbps") : os << "·ñ";
-	os<<endl << "ÓÅÏÈ¼¶£º" << "\t" << item.level;
+	os << "èŠ‚ç‚¹åºå·ï¼š" << "\t" << item.sequence_number << endl << "æœåŠ¡èŠ‚ç‚¹:" << "\t" << (item.is_service_node ? "æ˜¯" : "å¦") << endl;
+	os << "æ¶ˆè´¹èŠ‚ç‚¹ï¼š" << "\t";
+	item.consume_number() >= 0 ? (os << "æ˜¯ " << item.con_number << endl << "æ¶ˆè´¹å¸¦å®½ä¸º:" << "\t" << item.consumption << "Gbps") : os << "å¦";
+	os<<endl << "ä¼˜å…ˆçº§ï¼š" << "\t" << item.level;
 	return os;
 }

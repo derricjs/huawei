@@ -2,6 +2,7 @@
 #include "lib_io.h"
 #include "lib_time.h"
 #include "stdio.h"
+#include <windows.h>
 
 int main(int argc, char *argv[])
 {
@@ -26,6 +27,7 @@ int main(int argc, char *argv[])
     release_buff(topo, line_num);
 
     print_time("End");
+	system("pause");
 	return 0;
 }
 

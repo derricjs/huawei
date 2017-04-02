@@ -17,12 +17,12 @@ void deploy_server(char * topo[MAX_EDGE_NUM], int line_num, char * filename)
 
 	/******************************************输出测试******************************************************/
 #ifdef _TEST
-	ofstream os("network.txt");
-	first_edit.print(os);
+	ofstream out("network.txt");
+	first_edit.print(out);
 #endif
 	/*********************************************************************************************************/
-	int MAX_HOPS = first_edit.get_hops_tables(3);
-	vector<int> servers3(first_edit.search_dev_node(3));
+	int MAX_HOPS = first_edit.get_hops_tables();
+	vector<int> servers3(first_edit.search_dev_node(2));
 	vector<vector<int>> routes = first_edit.routing(servers3);
 
 	// 需要输出的内容
