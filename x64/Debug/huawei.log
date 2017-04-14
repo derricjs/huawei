@@ -1,12 +1,14 @@
-﻿生成启动时间为 2017/4/1 10:19:05。
+﻿生成启动时间为 2017/4/4 17:07:13。
      1>项目“E:\杂物\huawei\huawei\huawei.vcxproj”在节点 2 上(Build 个目标)。
      1>ClCompile:
-         D:\program file\Visual Studio community 2015\VC\bin\x86_amd64\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /D _MBCS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"x64\Debug\\" /Fd"x64\Debug\vc140.pdb" /Gd /TP /errorReport:prompt solution.cpp
+         D:\program file\Visual Studio community 2015\VC\bin\x86_amd64\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /D _MBCS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"x64\Debug\\" /Fd"x64\Debug\vc140.pdb" /Gd /TP /errorReport:prompt deploy.cpp solution.cpp
          solution.cpp
      1>e:\杂物\huawei\huawei\solution.cpp(6): warning C4244: “=”: 从“time_t”转换到“unsigned long”，可能丢失数据
-     1>e:\杂物\huawei\huawei\solution.cpp(69): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
-     1>e:\杂物\huawei\huawei\solution.cpp(260): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
-     1>e:\杂物\huawei\huawei\solution.cpp(373): warning C4267: “+=”: 从“size_t”转换到“int”，可能丢失数据
+     1>e:\杂物\huawei\huawei\solution.cpp(78): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
+     1>e:\杂物\huawei\huawei\solution.cpp(270): warning C4267: “=”: 从“size_t”转换到“int”，可能丢失数据
+     1>e:\杂物\huawei\huawei\solution.cpp(377): warning C4267: “+=”: 从“size_t”转换到“int”，可能丢失数据
+         deploy.cpp
+         正在生成代码...
        Link:
          D:\program file\Visual Studio community 2015\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"E:\杂物\huawei\x64\Debug\huawei.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"E:\杂物\huawei\x64\Debug\huawei.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\杂物\huawei\x64\Debug\huawei.lib" /MACHINE:X64 x64\Debug\cdn.obj
          x64\Debug\deploy.obj
@@ -18,4 +20,4 @@
 
 已成功生成。
 
-已用时间 00:00:02.06
+已用时间 00:00:02.92

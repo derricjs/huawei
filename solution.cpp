@@ -42,6 +42,16 @@ solution::solution(char * topo[MAX_EDGE_NUM])
 	net.price_of_perGbit = net.price_of_perGbit / total_bandwidth;
 }
 
+int solution::networktype()
+{
+	if (net.netnodes > 600)
+		return 2;
+	else if (net.netnodes > 250)
+		return 1;
+	else
+		return 0;
+}
+
 void solution::print(ostream & os)
 {
 	os << net.netnodes << " " << net.links << " " << net.comsumers << " " << net.cost_of_server << " " << net.price_of_perGbit << " " << net.total_consumption << endl;
@@ -65,8 +75,12 @@ void solution::print(ostream & os)
 
 vector<int> solution::search_dev_node(const int current_hops)
 {
-	//int amount_of_server = ceil((1 - net.comsumers)*current_hops / static_cast<double>(MAX_HOPS)) + net.comsumers;  //服务器数量
-	int amount_of_server = net.comsumers*0.75;
+	int amount_of_server = 0;
+	if (2 ==networktype())
+		amount_of_server = net.comsumers*0.5;
+	else
+		amount_of_server = ceil((1 - net.comsumers)*current_hops / static_cast<double>(MAX_HOPS)) + net.comsumers;  //服务器数量
+	
 	vector<int> candidate_server(net.netnodes);        //候选服务节点
 	vector<int> servers;
 	int i = 0;
@@ -114,7 +128,7 @@ vector<int> solution::search_dev_node(const int current_hops)
 			for (auto node = nettopo[*it].cbegin(); node != nettopo[*it].cend(); ++node)
 				throughtput += node->second.first;
 
-			if (amount_of_server == servers.size() || (net.comsumers == size_of_complementary && throughtput > 2 * net.total_consumption))
+			if (amount_of_server == servers.size() || (net.comsumers == size_of_complementary && throughtput > 1 * net.total_consumption))
 			{
 				auto q = [&](const int & j, const int & k) {return count_of_consumer.count(j) < count_of_consumer.count(k); };
 				stable_sort(order_of_consumer.begin(), order_of_consumer.end(), q);               //对消费节点寻路排序，以当前跳数下到达设施点数为依据
@@ -261,25 +275,16 @@ int solution::get_hops_tables(int mhops)
 
 }
 
-vector<vector<int>> solution::routing(vector<int>& servers)
+vector<vector<int>> solution::routing(vector<int>& servers, int & cost)
 {
 	vector<vector<int>> routes;
 	vector<int> route;
 	set<int> number_of_server_used;
 	int max_hops_of_routing = 7;//最大允许路由跳数
-	set_nodes_level(servers);
-	//for (auto & consumer : order_of_consumer)
-	//{
-	//	if (net.cost_of_server < (nodes[consumers[consumer].first].show_level()*consumers[consumer].second))
-	//	{
-	//		routes.push_back({consumers[consumer].second, consumer, consumers[consumer].first});
-	//		consumers[consumer].second = 0;
-	//		servers.push_back(consumers[consumer].first);
-	//	}
-	//}
+
 	for (int j = 0; j != 1000; ++j)
 	{
-		
+		set_nodes_level(servers);
 		for (auto & consumer : order_of_consumer)
 		{
 			if (0 == consumers[consumer].second)
@@ -320,6 +325,9 @@ vector<vector<int>> solution::routing(vector<int>& servers)
 					break;
 				}
 			}
+			ftime(&rawtime);
+			if (rawtime.time - s > 800)
+				break;
 
 		}
 		static int Q = 0, num = 0;
@@ -332,7 +340,7 @@ vector<vector<int>> solution::routing(vector<int>& servers)
 		(Q == q) ? ++num : num = 0;
 		Q = q;
 		ftime(&rawtime);
-		if (10 == num )//|| rawtime.time - s > 800)
+		if (10 == num || rawtime.time - s > 800)
 		{
 			//vector<int> direct_mode;
 			for (auto& consumer : consumers)
@@ -371,6 +379,7 @@ vector<vector<int>> solution::routing(vector<int>& servers)
 				num_of_servers.insert(route.back());
 			}
 			total_price += num_of_servers.size()*net.cost_of_server;
+			cost = total_price;
 			cout << endl << total_price<<endl;
 
 
@@ -381,11 +390,7 @@ vector<vector<int>> solution::routing(vector<int>& servers)
 			number_of_server_used.insert(route.back());
 		}
 		cout << q << ends << number_of_server_used.size() << endl;
-	}
-	//for (auto &consumer : consumers)
-	//{
-	//	routes.push_back(vector<int>{consumer.second.second, consumer.first, consumer.second.first });
-	//}
+	} 
 	return routes;
 }
 

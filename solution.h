@@ -28,10 +28,11 @@ class solution
 {
 public:
 	solution(char * topo[MAX_EDGE_NUM]); //将读入数据转换为相应数据结构
+	int networktype();
 	void print(std::ostream & os);
 	std::vector<int> search_dev_node(const int hops);        //返回所有节点在max_hops跳数内到达的消费节点
 	int get_hops_tables(int mhops = 10);                                //返回最大条数，并获取跳数与消费节点关系表
-	std::vector<std::vector<int>> routing(std::vector<int>& servers);                                       //路由
+	std::vector<std::vector<int>> routing(std::vector<int>& servers, int& cost);                                       //路由
 private:
 	void set_nodes_level(std::vector<int>& servers);
 	network net;                                                       //网络概况

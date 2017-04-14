@@ -21,14 +21,41 @@ void deploy_server(char * topo[MAX_EDGE_NUM], int line_num, char * filename)
 	first_edit.print(out);
 #endif
 	/*********************************************************************************************************/
-	int MAX_HOPS = first_edit.get_hops_tables();
-	vector<int> servers3(first_edit.search_dev_node(2));
-	vector<vector<int>> routes = first_edit.routing(servers3);
+	vector<vector<int>> final_routes;
+	int mini_cost = 1000000;
+	if (2 == first_edit.networktype())
+	{
+		int MAX_HOPS = first_edit.get_hops_tables(3);
+		vector<int> servers3(first_edit.search_dev_node(2));
+		vector<vector<int>> routes = first_edit.routing(servers3, mini_cost);
+		final_routes.insert(final_routes.begin(),routes.cbegin(),routes.cend());
+	}
+	else
+	{
+		int MAX_HOPS = first_edit.get_hops_tables();
+		for (int i = 1; i != MAX_HOPS; ++i)
+		{
+			solution test_edit(first_edit);
+			int cost = 0;
+			vector<int> servers3(test_edit.search_dev_node(i));
+			vector<vector<int>> routes = test_edit.routing(servers3, cost);
+			if (mini_cost > cost)
+			{
+				final_routes.clear();
+				final_routes.insert(final_routes.begin(), routes.cbegin(), routes.cend());
+				mini_cost = cost;
+			}
+				
+		}		
+	}
+
+
+
 
 	// 需要输出的内容
 	ostringstream os;
-	os << routes.size() << endl << endl;
-	for (auto &route : routes)
+	os << final_routes.size() << endl << endl;
+	for (auto &route : final_routes)
 	{
 		for (auto it = route.crbegin(); it != route.crend(); ++it)
 		{
